@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AVYRA | Beyond Every Journey — Artículos de Viaje de Lujo</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cormorant Garamond (Serif elegante) + Plus Jakarta Sans (Sans-serif moderna) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            avyra: {
+              navy: '#0F223D',
+              navyLight: '#183359',
+              burgundy: '#721C24',
+              burgundyHover: '#5A151B',
+              beige: '#F5F1EB',
+              beigeDark: '#E8DFD3',
+              gold: '#B59A6D',
+              ink: '#1E242B'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Estilos de impresión para comprobante de pedido */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #receipt-printable, #receipt-printable * {
+        visibility: visible;
+      }
+      #receipt-printable {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-avyra-beige text-avyra-ink font-sans antialiased selection:bg-avyra-burgundy selection:text-white">
+
+  <!-- ===================================================================== -->
+  <!-- NOTIFICACIÓN TOAST FLOTANTE (Reemplazo elegante de alert/confirm)     -->
+  <!-- ===================================================================== -->
+  <div id="toast-container" class="fixed top-24 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full"></div>
+
+  <!-- ===================================================================== -->
+  <!-- BARRA SUPERIOR INFORMATIVA                                            -->
+  <!-- ===================================================================== -->
+  <div class="bg-avyra-navy text-avyra-beige text-xs py-2 px-4 border-b border-white/10">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
+      <p class="tracking-wider uppercase font-medium flex items-center gap-2">
+        <span class="inline-block w-1.5 h-1.5 rounded-full bg-avyra-gold"></span>
+        Envíos a todo el Ecuador &bull; Retiro sin costo en Tulcán
+      </p>
+      <div class="flex items-center gap-4 text-avyra-beigeDark">
+        <span id="global-stock-indicator" class="font-medium">Inventario disponible: 210 unidades</span>
+        <span class="hidden md:inline">|</span>
+        <button onclick="openAdminModal()" class="hidden md:inline-flex items-center gap-1 hover:text-white underline underline-offset-2 transition">
+          <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> Gestión Comercial
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- HEADER PRINCIPAL DE NAVEGACIÓN                                        -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-avyra-beigeDark shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20 gap-4">
+        
+        <!-- Logo AVYRA -->
+        <a href="#" onclick="resetFilters(); return false;" class="flex items-center gap-3 group shrink-0">
+          <div class="w-10 h-10 rounded-lg bg-avyra-navy flex items-center justify-center text-white border border-avyra-gold/40 shadow-sm group-hover:bg-avyra-burgundy transition-colors">
+            <span class="font-serif text-2xl font-bold tracking-tighter">A</span>
+          </div>
+          <div>
+            <span class="block font-serif text-2xl sm:text-3xl font-bold tracking-[0.18em] text-avyra-navy leading-none">AVYRA</span>
+            <span class="block text-[9px] sm:text-[10px] tracking-[0.26em] text-avyra-burgundy font-semibold uppercase mt-1">Beyond Every Journey</span>
+          </div>
+        </a>
+
+        <!-- Buscador Desktop -->
+        <div class="hidden md:flex flex-1 max-w-md mx-6">
+          <div class="relative w-full">
+            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input 
+              type="text" 
+              id="search-input-desktop"
+              oninput="handleSearch(this.value)"
+              placeholder="Buscar maletas, mochilas, SKU (ej. AVY-001)..." 
+              class="w-full pl-10 pr-4 py-2.5 bg-avyra-beige/70 border border-avyra-beigeDark rounded-lg text-sm text-avyra-navy placeholder-gray-500 focus:outline-none focus:bg-white focus:border-avyra-navy transition"
+            />
+          </div>
+        </div>
+
+        <!-- Acciones Derecha -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="#catalogo" class="hidden lg:inline-block text-sm font-medium text-avyra-navy hover:text-avyra-burgundy px-3 py-2 transition">Catálogo</a>
+          <a href="#contacto" class="hidden lg:inline-block text-sm font-medium text-avyra-navy hover:text-avyra-burgundy px-3 py-2 transition">Contacto</a>
+          
+          <button onclick="openAdminModal()" title="Panel de Administración Rápida" class="p-2.5 rounded-lg text-avyra-navy hover:bg-avyra-beige transition border border-transparent hover:border-avyra-beigeDark">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+          </button>
+
+          <button onclick="toggleCartDrawer(true)" class="relative flex items-center gap-2 bg-avyra-navy hover:bg-avyra-navyLight text-white px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Bolsa</span>
+            <span id="cart-badge" class="bg-avyra-burgundy text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[22px] text-center">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Buscador Móvil -->
+      <div class="md:hidden pb-3">
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input 
+            type="text" 
+            id="search-input-mobile"
+            oninput="handleSearch(this.value)"
+            placeholder="Buscar productos o código SKU..." 
+            class="w-full pl-10 pr-4 py-2 bg-avyra-beige/70 border border-avyra-beigeDark rounded-lg text-sm text-avyra-navy placeholder-gray-500 focus:outline-none focus:bg-white focus:border-avyra-navy"
+          />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO BANNER DE MARCA                                                  -->
+  <!-- ===================================================================== -->
+  <section class="relative bg-avyra-navy text-white overflow-hidden">
+    <div class="absolute inset-0 opacity-25">
+      <img 
+        src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1800&q=80" 
+        alt="Horizonte de viaje AVYRA" 
+        class="w-full h-full object-cover object-center"
+        onerror="this.style.display='none'"
+      />
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-r from-avyra-navy via-avyra-navy/95 to-avyra-navy/70"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-avyra-beige text-xs font-medium tracking-widest uppercase mb-6">
+          <span class="w-2 h-2 rounded-full bg-avyra-burgundy"></span>
+          Colección Oficial Ecuador
+        </div>
+        <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-white mb-4">
+          Eleva cada destino.<br/>
+          <span class="text-avyra-beigeDark italic font-normal">Beyond Every Journey.</span>
+        </h1>
+        <p class="text-base sm:text-lg text-gray-300 leading-relaxed mb-8 max-w-xl">
+          Equipaje y accesorios esenciales diseñados con precisión estética, materiales resistentes y organización inteligente para viajeros que valoran la distinción y el orden en cada trayecto.
+        </p>
+        <div class="flex flex-wrap items-center gap-4">
+          <a href="#catalogo" class="px-7 py-3.5 rounded-lg bg-avyra-burgundy hover:bg-avyra-burgundyHover text-white font-semibold text-sm tracking-wide transition shadow-lg shadow-black/20 flex items-center gap-2">
+            Explorar Colección
+            <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+          </a>
+          <a href="https://wa.me/593963774328?text=Hola%20AVYRA,%20me%20gustar%C3%ADa%20recibir%20asesor%C3%ADa%20sobre%20sus%20productos%20de%20viaje." target="_blank" rel="noopener noreferrer" class="px-6 py-3.5 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 font-medium text-sm transition flex items-center gap-2">
+            <i data-lucide="message-circle" class="w-4 h-4 text-green-400"></i>
+            Asesoría Directa
+          </a>
+        </div>
+      </div>
+
+      <!-- Pilares de confianza -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-14 pt-8 border-t border-white/15">
+        <div class="flex items-start gap-3">
+          <div class="p-2.5 rounded-lg bg-white/10 text-avyra-gold shrink-0">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-white">Calidad Seleccionada</h3>
+            <p class="text-xs text-gray-300 mt-0.5">Diseño funcional pensado para durabilidad y comodidad real.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="p-2.5 rounded-lg bg-white/10 text-avyra-gold shrink-0">
+            <i data-lucide="truck" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-white">Cobertura Nacional</h3>
+            <p class="text-xs text-gray-300 mt-0.5">Envíos coordinados a todo Ecuador y entrega directa en Tulcán.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="p-2.5 rounded-lg bg-white/10 text-avyra-gold shrink-0">
+            <i data-lucide="headphones" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-white">Atención Personalizada</h3>
+            <p class="text-xs text-gray-300 mt-0.5">Acompañamiento directo en cada pedido y método de pago.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SECCIÓN DE CATÁLOGO Y FILTROS                                         -->
+  <!-- ===================================================================== -->
+  <main id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+    
+    <!-- Encabezado y Controles de Filtro -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-[0.22em] text-avyra-burgundy">Selección Exclusiva</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-avyra-navy mt-1">Catálogo AVYRA</h2>
+        <p class="text-sm text-gray-600 mt-1">Precios referenciales en USD. Selecciona un producto para explorar sus 4 vistas detalladas.</p>
+      </div>
+
+      <!-- Botones de Categoría -->
+      <div id="category-filters" class="flex flex-wrap items-center gap-2">
+        <button onclick="setCategory('Todos')" data-cat="Todos" class="cat-btn active px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-avyra-navy text-white shadow-sm">
+          Todos (6)
+        </button>
+        <button onclick="setCategory('Equipaje')" data-cat="Equipaje" class="cat-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition bg-white text-avyra-navy border border-avyra-beigeDark hover:border-avyra-navy">
+          Equipaje
+        </button>
+        <button onclick="setCategory('Confort')" data-cat="Confort" class="cat-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition bg-white text-avyra-navy border border-avyra-beigeDark hover:border-avyra-navy">
+          Confort
+        </button>
+        <button onclick="setCategory('Accesorios')" data-cat="Accesorios" class="cat-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition bg-white text-avyra-navy border border-avyra-beigeDark hover:border-avyra-navy">
+          Accesorios
+        </button>
+        <button onclick="setCategory('Electrónica')" data-cat="Electrónica" class="cat-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition bg-white text-avyra-navy border border-avyra-beigeDark hover:border-avyra-navy">
+          Electrónica
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid de Productos -->
+    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+      <!-- Renderizado dinámico mediante JavaScript -->
+    </div>
+
+    <!-- Estado vacío de búsqueda -->
+    <div id="empty-search" class="hidden text-center py-16 bg-white rounded-2xl border border-avyra-beigeDark">
+      <div class="w-14 h-14 rounded-full bg-avyra-beige mx-auto flex items-center justify-center text-avyra-navy mb-4">
+        <i data-lucide="search-x" class="w-6 h-6"></i>
+      </div>
+      <h3 class="font-serif text-2xl font-bold text-avyra-navy">No encontramos coincidencias</h3>
+      <p class="text-sm text-gray-600 mt-1 mb-5">Intenta buscar con otro término o restablece los filtros de categoría.</p>
+      <button onclick="resetFilters()" class="px-5 py-2.5 rounded-lg bg-avyra-navy text-white text-sm font-medium hover:bg-avyra-navyLight transition">
+        Ver todos los productos
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- SECCIÓN INFORMATIVA DE COMPRA Y ENVÍOS EN ECUADOR                     -->
+  <!-- ===================================================================== -->
+  <section class="bg-white border-y border-avyra-beigeDark py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-[0.2em] text-avyra-burgundy">Experiencia Transparente</span>
+        <h2 class="font-serif text-3xl font-bold text-avyra-navy mt-1">¿Cómo adquirir tus productos AVYRA?</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 rounded-xl bg-avyra-beige/60 border border-avyra-beigeDark">
+          <div class="w-10 h-10 rounded-lg bg-avyra-navy text-white font-serif font-bold text-xl flex items-center justify-center mb-4">1</div>
+          <h3 class="font-semibold text-avyra-navy text-lg mb-2">Selecciona tu equipamiento</h3>
+          <p class="text-sm text-gray-600 leading-relaxed">Explora las vistas de cada artículo, verifica la disponibilidad en tiempo real y añade las unidades que necesites a tu bolsa.</p>
+        </div>
+        <div class="p-6 rounded-xl bg-avyra-beige/60 border border-avyra-beigeDark">
+          <div class="w-10 h-10 rounded-lg bg-avyra-burgundy text-white font-serif font-bold text-xl flex items-center justify-center mb-4">2</div>
+          <h3 class="font-semibold text-avyra-navy text-lg mb-2">Completa tus datos de entrega</h3>
+          <p class="text-sm text-gray-600 leading-relaxed">Indica tu ciudad en Ecuador para coordinar el envío nacional o selecciona retiro directo sin costo en Tulcán.</p>
+        </div>
+        <div class="p-6 rounded-xl bg-avyra-beige/60 border border-avyra-beigeDark">
+          <div class="w-10 h-10 rounded-lg bg-avyra-navy text-white font-serif font-bold text-xl flex items-center justify-center mb-4">3</div>
+          <h3 class="font-semibold text-avyra-navy text-lg mb-2">Confirma y coordina el pago</h3>
+          <p class="text-sm text-gray-600 leading-relaxed">Recibirás tu comprobante con número de orden y podrás finalizar la coordinación de pago y envío directamente por WhatsApp o correo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER / PIE DE PÁGINA OFICIAL                                        -->
+  <!-- ===================================================================== -->
+  <footer id="contacto" class="bg-avyra-navy text-avyra-beige">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        
+        <!-- Marca -->
+        <div class="lg:col-span-1">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-lg bg-avyra-burgundy flex items-center justify-center text-white font-serif text-xl font-bold">A</div>
+            <div>
+              <span class="block font-serif text-2xl font-bold tracking-[0.18em] text-white leading-none">AVYRA</span>
+              <span class="block text-[9px] tracking-[0.24em] text-avyra-gold uppercase mt-1">Beyond Every Journey</span>
+            </div>
+          </div>
+          <p class="text-sm text-gray-300 leading-relaxed mb-4">
+            Artículos de viaje diseñados para acompañar cada trayecto con elegancia, funcionalidad y confianza.
+          </p>
+          <p class="text-xs text-gray-400 italic">
+            * Los precios publicados son referenciales y están sujetos a actualización comercial.
+          </p>
+        </div>
+
+        <!-- Categorías -->
+        <div>
+          <h4 class="font-serif text-lg font-semibold text-white mb-4 tracking-wide">Colecciones</h4>
+          <ul class="space-y-2.5 text-sm text-gray-300">
+            <li><a href="#catalogo" onclick="setCategory('Equipaje')" class="hover:text-white transition">Equipaje de Cabina y Mochilas</a></li>
+            <li><a href="#catalogo" onclick="setCategory('Confort')" class="hover:text-white transition">Confort en Vuelo</a></li>
+            <li><a href="#catalogo" onclick="setCategory('Accesorios')" class="hover:text-white transition">Organización y Accesorios</a></li>
+            <li><a href="#catalogo" onclick="setCategory('Electrónica')" class="hover:text-white transition">Electrónica de Viaje</a></li>
+          </ul>
+        </div>
+
+        <!-- Información de Contacto Oficial -->
+        <div>
+          <h4 class="font-serif text-lg font-semibold text-white mb-4 tracking-wide">Contacto Oficial</h4>
+          <ul class="space-y-3 text-sm text-gray-300">
+            <li class="flex items-start gap-2.5">
+              <i data-lucide="user" class="w-4 h-4 text-avyra-gold shrink-0 mt-0.5"></i>
+              <span><strong class="text-white">Responsable:</strong> Melany Sarchi</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <i data-lucide="map-pin" class="w-4 h-4 text-avyra-gold shrink-0 mt-0.5"></i>
+              <span><strong class="text-white">Ubicación:</strong> Tulcán, Ecuador</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <i data-lucide="mail" class="w-4 h-4 text-avyra-gold shrink-0 mt-0.5"></i>
+              <a href="mailto:melany.sarchi@upec.edu.ec" class="hover:text-white underline underline-offset-2 break-all">melany.sarchi@upec.edu.ec</a>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <i data-lucide="phone" class="w-4 h-4 text-avyra-gold shrink-0 mt-0.5"></i>
+              <a href="https://wa.me/593963774328" target="_blank" rel="noopener noreferrer" class="hover:text-white">WhatsApp: 0963774328</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Atención y Administración -->
+        <div>
+          <h4 class="font-serif text-lg font-semibold text-white mb-4 tracking-wide">Atención al Viajero</h4>
+          <p class="text-sm text-gray-300 mb-4">¿Tienes consultas sobre disponibilidad o envíos a tu provincia?</p>
+          <a href="https://wa.me/593963774328?text=Hola%20Melany,%20visito%20la%20tienda%20AVYRA%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg bg-avyra-burgundy hover:bg-avyra-burgundyHover text-white text-sm font-medium transition mb-3">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            Escribir por WhatsApp
+          </a>
+          <button onclick="openAdminModal()" class="inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-gray-200 text-xs font-medium transition border border-white/15">
+            <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+            Editar Precios e Inventario
+          </button>
+        </div>
+      </div>
+
+      <div class="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+        <p>&copy; <span id="current-year"></span> AVYRA — Beyond Every Journey. Todos los derechos reservados.</p>
+        <p>Tulcán, Carchi, Ecuador.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- BOTÓN FLOTANTE DE WHATSAPP                                            -->
+  <!-- ===================================================================== -->
+  <a 
+    href="https://wa.me/593963774328?text=Hola%20AVYRA,%20quisiera%20consultar%20sobre%20sus%20productos%20de%20viaje." 
+    target="_blank" 
+    rel="noopener noreferrer"
+    aria-label="Contactar por WhatsApp"
+    class="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 bg-[#1E7E48] hover:bg-[#176639] text-white px-4 py-3 rounded-full shadow-xl transition-transform hover:scale-105 border border-white/20"
+  >
+    <i data-lucide="message-circle" class="w-6 h-6"></i>
+    <span class="hidden sm:inline text-sm font-semibold pr-1">WhatsApp AVYRA</span>
+  </a>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL / PÁGINA INDIVIDUAL DE PRODUCTO (CON 4 VISTAS INTERACTIVAS)     -->
+  <!-- ===================================================================== -->
+  <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-avyra-navy/75 backdrop-blur-sm p-3 sm:p-6">
+    <div class="min-h-full flex items-center justify-center">
+      <div class="bg-white rounded-2xl max-w-5xl w-full overflow-hidden shadow-2xl border border-avyra-beigeDark relative">
+        
+        <!-- Botón Cerrar -->
+        <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/90 hover:bg-avyra-beige text-avyra-navy flex items-center justify-center shadow-md border border-avyra-beigeDark transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <div id="product-modal-content" class="grid grid-cols-1 lg:grid-cols-12">
+          <!-- Contenido dinámico generado por JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- CARRITO DE COMPRAS LATERAL DESLIZABLE (DRAWER)                        -->
+  <!-- ===================================================================== -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 z-50 hidden bg-avyra-navy/60 backdrop-blur-xs transition-opacity" onclick="toggleCartDrawer(false)"></div>
+  
+  <aside id="cart-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Cabecera Carrito -->
+    <div class="px-6 py-5 bg-avyra-navy text-white flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-avyra-gold"></i>
+        <h3 class="font-serif text-xl font-bold tracking-wide">Tu Bolsa de Viaje</h3>
+      </div>
+      <button onclick="toggleCartDrawer(false)" class="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Lista de items en el carrito -->
+    <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4 bg-avyra-beige/30">
+      <!-- Renderizado dinámico -->
+    </div>
+
+    <!-- Pie del carrito -->
+    <div id="cart-footer" class="p-6 bg-white border-t border-avyra-beigeDark">
+      <div class="space-y-2 mb-4 text-sm">
+        <div class="flex justify-between text-gray-600">
+          <span>Subtotal referencial</span>
+          <span id="cart-subtotal" class="font-medium text-avyra-navy">$0.00</span>
+        </div>
+        <div class="flex justify-between text-gray-600">
+          <span>Envío (Ecuador)</span>
+          <span class="text-xs italic text-gray-500">Se define en el siguiente paso</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-avyra-navy pt-2 border-t border-avyra-beigeDark">
+          <span>Total estimado (USD)</span>
+          <span id="cart-total">$0.00</span>
+        </div>
+      </div>
+      <button id="checkout-btn" onclick="openCheckoutModal()" class="w-full py-3.5 px-5 rounded-lg bg-avyra-burgundy hover:bg-avyra-burgundyHover text-white font-semibold text-sm tracking-wide transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+        <span>Continuar con el Pedido</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL DE PROCESO DE COMPRA (CHECKOUT) Y CONFIRMACIÓN DE PEDIDO        -->
+  <!-- ===================================================================== -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-avyra-navy/75 backdrop-blur-sm p-3 sm:p-6">
+    <div class="min-h-full flex items-center justify-center">
+      <div class="bg-white rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl border border-avyra-beigeDark">
+        
+        <!-- Cabecera Checkout -->
+        <div class="px-6 py-4 bg-avyra-navy text-white flex items-center justify-between no-print">
+          <div>
+            <span class="text-[10px] uppercase tracking-[0.22em] text-avyra-gold block">AVYRA Checkout</span>
+            <h3 id="checkout-modal-title" class="font-serif text-xl sm:text-2xl font-bold">Finalizar Solicitud de Compra</h3>
+          </div>
+          <button onclick="closeCheckoutModal()" class="p-2 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Paso 1: Formulario de Checkout -->
+        <div id="checkout-form-view" class="p-6 sm:p-8">
+          <form id="checkout-form" onsubmit="submitOrder(event)" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Columna Izquierda: Datos del Cliente, Envío y Pago -->
+            <div class="lg:col-span-7 space-y-6">
+              
+              <!-- Datos Personales -->
+              <div>
+                <h4 class="font-serif text-lg font-bold text-avyra-navy border-b border-avyra-beigeDark pb-2 mb-4 flex items-center gap-2">
+                  <i data-lucide="user-check" class="w-4 h-4 text-avyra-burgundy"></i>
+                  1. Datos del Cliente
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-avyra-navy mb-1">Nombre completo *</label>
+                    <input type="text" id="cust-name" required placeholder="Ej. Andrea Mendoza" class="w-full px-3.5 py-2.5 rounded-lg border border-avyra-beigeDark bg-avyra-beige/30 text-sm focus:bg-white focus:border-avyra-navy focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-avyra-navy mb-1">Cédula o RUC *</label>
+                    <input type="text" id="cust-id" required placeholder="Ej. 0401234567" class="w-full px-3.5 py-2.5 rounded-lg border border-avyra-beigeDark bg-avyra-beige/30 text-sm focus:bg-white focus:border-avyra-navy focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-avyra-navy mb-1">Teléfono / WhatsApp *</label>
+                    <input type="tel" id="cust-phone" required placeholder="Ej. 0991234567" class="w-full px-3.5 py-2.5 rounded-lg border border-avyra-beigeDark bg-avyra-beige/30 text-sm focus:bg-white focus:border-avyra-navy focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-avyra-navy mb-1">Correo electrónico *</label>
+                    <input type="email" id="cust-email" required placeholder="correo@ejemplo.com" class="w-full px-3.5 py-2.5 rounded-lg border border-avyra-beigeDark bg-avyra-beige/30 text-sm focus:bg-white focus:border-avyra-navy focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Opciones de Envío en Ecuador -->
+              <div>
+                <h4 class="font-serif text-lg font-bold text-avyra-navy border-b border-avyra-beigeDark pb-2 mb-4 flex items-center gap-2">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-avyra-burgundy"></i>
+                  2. Entrega y Envío Nacional (Ecuador)
+                </h4>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <label class="cursor-pointer border rounded-xl p-3.5 flex items-start gap-3 transition has-[:checked]:border-avyra-navy has-[:checked]:bg-avyra-beige/60 border-avyra-beigeDark">
+                    <input type="radio" name="shipping-method" value="Envío a domicilio nacional (Tarifa a coordinar según destino)" checked onchange="toggleAddressFields()" class="mt-1 accent-avyra-burgundy" />
+                    <div>
+                      <span class="block text-xs font-bold text-avyra-navy">Envío Nacional a Domicilio</span>
+                      <span class="block text-[11px] text-gray-600 mt-0.5">Todo el Ecuador. Tarifa de envío por confirmar según destino.</span>
+                    </div>
+                  </label>
+                  <label class="cursor-pointer border rounded-xl p-3.5 flex items-start gap-3 transition has-[:checked]:border-avyra-navy has-[:checked]:bg-avyra-beige/60 border-avyra-beigeDark">
+                    <input type="radio" name="shipping-method" value="Retiro en punto Tulcán (Sin costo de envío)" onchange="toggleAddressFields()" class="mt-1 accent-avyra-burgundy" />
+                    <div>
+                      <span class="block text-xs font-bold text-avyra-navy">Retiro en Tulcán</span>
+                      <span class="block text-[11px] text-gray-600 mt-0.5">Entrega directa coordinada en Tulcán. Sin costo adicional.</span>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-avyra-navy mb-1">Provincia *</label>
+                    <select id="cust-province" required class="w-full px-3.5 py-2.5 rounded-lg border border-avyra-beigeDark bg-avyra-beige/30 text-sm focus:bg-white focus:border-avyra-navy focus:outline-none">
+                      <option value="Carchi (Tulcán)">Carchi (Tulcán)</option>
+                      <option value="Pichincha">Pichincha</option>
+                      <option value="Guayas">Guayas</option>
+                      <option value="Azuay">Azuay</option>
+                      <option value="Imbabura">Imbabura</option>
+                      <option value="Tungurahua">Tungurahua</option>
+                      <option value="Manabí">Manabí</option>
+                      <option value="Loja">Loja</option>
+                      <option value="El Oro">El Oro</option>
+                      <option value="Chimborazo">Chimborazo</option>
+                      <option value="Cotopaxi">Cotopaxi</option>
+                      <option value="Esmeraldas">Esmeraldas</option>
+                      <option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</option>
+                      <option value="Los Ríos">Los Ríos</option>
+                      <option value="Santa Elena">Santa Elena</option>
+                      <option value="Cañar">Cañar</option>
+                      <option value="Bolívar">Bolívar</option>
+                      <option value="Sucumbíos">Sucumbíos</option>
+                      <option value="Orellana">Orellana</option>
+                      <option value="Napo">Napo</option>
+                      <option value="Pastaza">Pastaza</option>
+                      <option value="Morona Santiago">Morona Santiago</option>
+                      <option value="Zamora Chinchipe">Zamora Chinchipe</option>
+                      <option value="Galápagos">Galápagos</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-avyra-navy mb-1">Ciudad *</label>
+                    <input type="text" id="cust-city" required value="Tulcán" placeholder="Ej. Quito, Guayaquil, Tulcán" class="w-full px-3.5 py-2.5 rounded-lg border border-avyra-beigeDark bg-avyra-beige/30 text-sm focus:bg-white focus:border-avyra-navy focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-avyra-navy mb-1">Dirección exacta / Referencia *</label>
+                    <input type="text" id="cust-address" required placeholder="Calle principal, intersección, número de casa/edificio o referencia" class="w-full px-3.5 py-2.5 rounded-lg border border-avyra-beigeDark bg-avyra-beige/30 text-sm focus:bg-white focus:border-avyra-navy focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Métodos de Pago -->
+              <div>
+                <h4 class="font-serif text-lg font-bold text-avyra-navy border-b border-avyra-beigeDark pb-2 mb-4 flex items-center gap-2">
+                  <i data-lucide="credit-card" class="w-4 h-4 text-avyra-burgundy"></i>
+                  3. Método de Pago
+                </h4>
+                <div class="space-y-2.5">
+                  <label class="cursor-pointer border rounded-xl p-3.5 flex items-start gap-3 transition has-[:checked]:border-avyra-navy has-[:checked]:bg-avyra-beige/60 border-avyra-beigeDark">
+                    <input type="radio" name="payment-method" value="Transferencia Bancaria Directa" checked class="mt-1 accent-avyra-burgundy" />
+                    <div>
+                      <span class="block text-xs font-bold text-avyra-navy">Transferencia Bancaria Directa</span>
+                      <span class="block text-[11px] text-gray-600 mt-0.5">Los datos bancarios oficiales se enviarán al confirmar tu pedido vía WhatsApp o correo electrónico.</span>
+                    </div>
+                  </label>
+                  <label class="cursor-pointer border rounded-xl p-3.5 flex items-start gap-3 transition has-[:checked]:border-avyra-navy has-[:checked]:bg-avyra-beige/60 border-avyra-beigeDark">
+                    <input type="radio" name="payment-method" value="Pago Contra Entrega (Disponible en Tulcán)" class="mt-1 accent-avyra-burgundy" />
+                    <div>
+                      <span class="block text-xs font-bold text-avyra-navy">Pago Contra Entrega (Tulcán)</span>
+                      <span class="block text-[11px] text-gray-600 mt-0.5">Cancela al recibir tu pedido personalmente en la ciudad de Tulcán.</span>
+                    </div>
+                  </label>
+                  <label class="cursor-pointer border rounded-xl p-3.5 flex items-start gap-3 transition has-[:checked]:border-avyra-navy has-[:checked]:bg-avyra-beige/60 border-avyra-beigeDark">
+                    <input type="radio" name="payment-method" value="Coordinación directa por WhatsApp" class="mt-1 accent-avyra-burgundy" />
+                    <div>
+                      <span class="block text-xs font-bold text-avyra-navy">Coordinación directa por WhatsApp</span>
+                      <span class="block text-[11px] text-gray-600 mt-0.5">Acuerda la modalidad de pago y envío directamente con Melany Sarchi.</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Resumen del Pedido -->
+            <div class="lg:col-span-5">
+              <div class="bg-avyra-beige/70 rounded-xl p-5 border border-avyra-beigeDark sticky top-4">
+                <h4 class="font-serif text-lg font-bold text-avyra-navy border-b border-avyra-beigeDark pb-3 mb-4">Resumen de tu Selección</h4>
+                <div id="checkout-summary-items" class="space-y-3 max-h-60 overflow-y-auto pr-1 mb-4 text-sm">
+                  <!-- Items renderizados por JS -->
+                </div>
+                <div class="border-t border-avyra-beigeDark pt-3 space-y-2 text-sm">
+                  <div class="flex justify-between text-gray-600">
+                    <span>Subtotal productos</span>
+                    <span id="checkout-subtotal" class="font-semibold text-avyra-navy">$0.00</span>
+                  </div>
+                  <div class="flex justify-between text-gray-600">
+                    <span>Costo de envío</span>
+                    <span id="checkout-shipping-label" class="text-xs font-medium text-avyra-burgundy">Por confirmar según destino</span>
+                  </div>
+                  <div class="flex justify-between text-lg font-bold text-avyra-navy pt-2 border-t border-avyra-beigeDark">
+                    <span>Total Referencial</span>
+                    <span id="checkout-total">$0.00</span>
+                  </div>
+                </div>
+
+                <p class="text-[11px] text-gray-500 mt-4 leading-relaxed">
+                  Al confirmar, se reservarán las unidades de nuestro inventario y se generará tu comprobante oficial de pedido.
+                </p>
+
+                <button type="submit" class="mt-5 w-full py-3.5 px-5 rounded-lg bg-avyra-burgundy hover:bg-avyra-burgundyHover text-white font-semibold text-sm tracking-wide transition shadow-md flex items-center justify-center gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                  Confirmar Pedido Oficial
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Paso 2: Confirmación y Recibo del Pedido -->
+        <div id="checkout-confirmation-view" class="hidden p-6 sm:p-8 bg-white">
+          <div id="receipt-printable" class="max-w-2xl mx-auto border border-avyra-beigeDark rounded-2xl p-6 sm:p-8 bg-avyra-beige/20">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-avyra-beigeDark pb-6 mb-6">
+              <div>
+                <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-green-700 bg-green-100 px-3 py-1 rounded-full mb-2">
+                  <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Pedido Registrado
+                </div>
+                <h4 class="font-serif text-2xl sm:text-3xl font-bold text-avyra-navy">AVYRA</h4>
+                <p class="text-[10px] uppercase tracking-[0.22em] text-avyra-burgundy font-semibold">Beyond Every Journey</p>
+              </div>
+              <div class="sm:text-right">
+                <span class="block text-xs text-gray-500">N° de Orden</span>
+                <span id="receipt-order-id" class="font-mono text-base font-bold text-avyra-navy">AVY-000000</span>
+                <span id="receipt-date" class="block text-xs text-gray-500 mt-1"></span>
+              </div>
+            </div>
+
+            <!-- Datos Cliente en Recibo -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-white p-4 rounded-xl border border-avyra-beigeDark mb-6">
+              <div>
+                <span class="text-gray-400 uppercase font-semibold block mb-1">Cliente</span>
+                <p id="receipt-cust-name" class="font-bold text-avyra-navy text-sm"></p>
+                <p id="receipt-cust-id" class="text-gray-600"></p>
+                <p id="receipt-cust-phone" class="text-gray-600"></p>
+                <p id="receipt-cust-email" class="text-gray-600"></p>
+              </div>
+              <div>
+                <span class="text-gray-400 uppercase font-semibold block mb-1">Entrega y Pago</span>
+                <p id="receipt-shipping" class="font-semibold text-avyra-navy"></p>
+                <p id="receipt-location" class="text-gray-600 mt-0.5"></p>
+                <p id="receipt-address" class="text-gray-600"></p>
+                <p id="receipt-payment" class="text-avyra-burgundy font-semibold mt-1.5"></p>
+              </div>
+            </div>
+
+            <!-- Tabla de Productos -->
+            <div class="mb-6">
+              <h5 class="text-xs font-bold uppercase tracking-wider text-avyra-navy mb-3">Detalle de Productos</h5>
+              <div id="receipt-items-list" class="divide-y divide-avyra-beigeDark border-y border-avyra-beigeDark text-sm">
+                <!-- Renderizado JS -->
+              </div>
+              <div class="flex justify-between items-center pt-4 text-base font-bold text-avyra-navy">
+                <span>Total Referencial (USD)</span>
+                <span id="receipt-total" class="text-xl text-avyra-burgundy"></span>
+              </div>
+              <p class="text-[11px] text-gray-500 mt-1">
+                * El valor de envío nacional (si aplica) y los datos oficiales de pago serán confirmados directamente por nuestro equipo comercial.
+              </p>
+            </div>
+
+            <!-- Pie del recibo -->
+            <div class="text-center text-xs text-gray-500 border-t border-avyra-beigeDark pt-4">
+              <p class="font-semibold text-avyra-navy">Contacto Oficial AVYRA — Melany Sarchi</p>
+              <p>Tulcán, Ecuador &bull; WhatsApp: 0963774328 &bull; melany.sarchi@upec.edu.ec</p>
+            </div>
+          </div>
+
+          <!-- Botones de Acción Post-Compra -->
+          <div class="max-w-2xl mx-auto mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 no-print">
+            <a id="receipt-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-lg bg-[#1E7E48] hover:bg-[#176639] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-md transition">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+              Enviar Pedido por WhatsApp
+            </a>
+            <button onclick="window.print()" class="w-full sm:w-auto px-5 py-3.5 rounded-lg bg-avyra-navy hover:bg-avyra-navyLight text-white font-medium text-sm flex items-center justify-center gap-2 transition">
+              <i data-lucide="printer" class="w-4 h-4"></i>
+              Imprimir / Guardar PDF
+            </button>
+            <button onclick="closeCheckoutModal()" class="w-full sm:w-auto px-5 py-3.5 rounded-lg border border-avyra-beigeDark hover:bg-avyra-beige text-avyra-navy font-medium text-sm transition">
+              Volver a la Tienda
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL DE ADMINISTRACIÓN RÁPIDA (EDITAR PRECIOS E INVENTARIO)          -->
+  <!-- ===================================================================== -->
+  <div id="admin-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-avyra-navy/75 backdrop-blur-sm p-3 sm:p-6">
+    <div class="min-h-full flex items-center justify-center">
+      <div class="bg-white rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl border border-avyra-beigeDark">
+        
+        <div class="px-6 py-4 bg-avyra-navy text-white flex items-center justify-between">
+          <div>
+            <span class="text-[10px] uppercase tracking-[0.22em] text-avyra-gold block">Panel Comercial AVYRA</span>
+            <h3 class="font-serif text-xl sm:text-2xl font-bold">Gestión de Precios e Inventario</h3>
+          </div>
+          <button onclick="closeAdminModal()" class="p-2 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-avyra-beige p-4 rounded-xl border border-avyra-beigeDark mb-5 text-xs">
+            <p class="text-avyra-navy">
+              Modifica los precios referenciales (USD) o el stock disponible. Los cambios se guardan automáticamente en este navegador.
+            </p>
+            <span id="admin-total-stock" class="font-bold text-avyra-burgundy whitespace-nowrap text-sm">Total: 210 uds.</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-avyra-beigeDark text-xs uppercase text-gray-500">
+                  <th class="py-3 px-2">SKU</th>
+                  <th class="py-3 px-2">Producto</th>
+                  <th class="py-3 px-2">Categoría</th>
+                  <th class="py-3 px-2 w-32">Precio (USD)</th>
+                  <th class="py-3 px-2 w-28">Stock (Uds.)</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body" class="divide-y divide-avyra-beigeDark">
+                <!-- Filas generadas por JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-avyra-beigeDark flex flex-col sm:flex-row items-center justify-between gap-3">
+            <button onclick="resetDefaultCatalog()" class="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-avyra-burgundy text-avyra-burgundy hover:bg-avyra-burgundy hover:text-white text-xs font-semibold transition">
+              Restablecer Valores Iniciales (210 uds.)
+            </button>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <button onclick="closeAdminModal()" class="flex-1 sm:flex-none px-5 py-2.5 rounded-lg border border-avyra-beigeDark text-gray-600 text-xs font-semibold hover:bg-avyra-beige transition">
+                Cancelar
+              </button>
+              <button onclick="saveAdminChanges()" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-avyra-navy hover:bg-avyra-navyLight text-white text-xs font-semibold transition shadow-sm">
+                Guardar Cambios
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- LÓGICA JAVASCRIPT DE LA TIENDA VIRTUAL AVYRA                          -->
+  <!-- ===================================================================== -->
+  <script>
+    // 1. CATÁLOGO BASE OFICIAL (210 UNIDADES TOTALES DISTRIBUIDAS EN 6 PRODUCTOS)
+    const INITIAL_PRODUCTS = [
+      {
+        sku: 'AVY-001',
+        name: 'Maleta Inteligente AVYRA Pro',
+        category: 'Equipaje',
+        price: 249.00,
+        stock: 25,
+        shortDesc: 'Carcasa rígida de alta resistencia, ruedas giratorias 360° silenciosas y distribución interior organizada.',
+        fullDesc: 'Diseñada para acompañarte en vuelos nacionales e internacionales con total elegancia. La Maleta Inteligente AVYRA Pro combina una estructura rígida resistente a impactos con un sistema de cuatro ruedas dobles giratorias 360° de desplazamiento suave, asa telescópica ergonómica y compartimentos interiores con separadores para mantener tus pertenencias impecables durante todo el trayecto.',
+        highlights: [
+          'Carcasa rígida de acabado elegante y alta durabilidad',
+          'Ruedas giratorias 360° silenciosas para maniobra ágil',
+          'Interior dividido con correas de sujeción y bolsillos con cierre',
+          'Asa telescópica ajustable de agarre cómodo'
+        ],
+        views: [
+          { label: 'Vista Frontal', url: 'https://images.unsplash.com/photo-1565026057447-bc90a3dceb87?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Vista Lateral', url: 'https://images.unsplash.com/photo-1581553680321-4fffae59fccd?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Detalles', url: 'https://images.unsplash.com/photo-1553531384-cc64ac80f931?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Uso en Viaje', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=85' }
+        ]
+      },
+      {
+        sku: 'AVY-002',
+        name: 'Mochila Travel Elite',
+        category: 'Equipaje',
+        price: 135.00,
+        stock: 35,
+        shortDesc: 'Diseño ergonómico para cabina, material resistente a salpicaduras y compartimento acolchado para portátil.',
+        fullDesc: 'La Mochila Travel Elite ofrece la versatilidad ideal para viajes ejecutivos o escapadas de fin de semana. Fabricada con tejidos de alta densidad resistentes a salpicaduras, integra un compartimento independiente acolchado para proteger tu laptop, respaldo transpirable y banda posterior para acoplarla cómodamente sobre el asa de tu maleta.',
+        highlights: [
+          'Compartimento principal de amplia apertura tipo equipaje',
+          'Funda interior acolchada para ordenador portátil y tablet',
+          'Tejido exterior repelente a salpicaduras y fácil limpieza',
+          'Correas acolchadas ergonómicas y cinta para sujetar a maleta'
+        ],
+        views: [
+          { label: 'Vista Frontal', url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Vista Lateral', url: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Detalles', url: 'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Uso en Viaje', url: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=85' }
+        ]
+      },
+      {
+        sku: 'AVY-003',
+        name: 'Almohada de Cuello Premium',
+        category: 'Confort',
+        price: 38.00,
+        stock: 45,
+        shortDesc: 'Espuma viscoelástica de soporte cervical ergonómico con funda suave lavable y bolsa compacta.',
+        fullDesc: 'Transforma los vuelos largos y trayectos terrestres en una experiencia de descanso reparador. La Almohada de Cuello Premium de AVYRA se adapta al contorno natural del cuello gracias a su núcleo de espuma viscoelástica, evitando la fatiga cervical. Incluye funda exterior transpirable desmontable para lavado y bolsa de transporte compacta.',
+        highlights: [
+          'Núcleo de espuma viscoelástica de recuperación lenta',
+          'Diseño ergonómico envolvente para soporte lateral y cervical',
+          'Funda exterior suave, transpirable y lavable con cierre',
+          'Incluye bolsa compacta para guardar sin ocupar espacio'
+        ],
+        views: [
+          { label: 'Vista Frontal', url: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Vista Lateral', url: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Detalles', url: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Uso en Viaje', url: 'https://images.unsplash.com/photo-1540339832862-474599807836?auto=format&fit=crop&w=900&q=85' }
+        ]
+      },
+      {
+        sku: 'AVY-004',
+        name: 'Organizador Tech Travel',
+        category: 'Accesorios',
+        price: 32.00,
+        stock: 40,
+        shortDesc: 'Estuche estructurado con bandas elásticas y bolsillos con cierre para cables, cargadores y accesorios.',
+        fullDesc: 'Mantén tus dispositivos y cables siempre ordenados y libres de enredos. El Organizador Tech Travel cuenta con un interior inteligente de doble nivel con bandas elásticas reforzadas, bolsillos de malla con cierre y divisiones acolchadas para guardar cargadores, memorias, audífonos y adaptadores en un formato compacto que cabe en cualquier mochila.',
+        highlights: [
+          'Bandas elásticas de sujeción para cables y accesorios pequeños',
+          'Bolsillos interiores de malla con cierre para visibilidad rápida',
+          'Exterior semi-rígido que protege el contenido contra golpes leves',
+          'Formato ligero y portátil con asa lateral de mano'
+        ],
+        views: [
+          { label: 'Vista Frontal', url: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Vista Lateral', url: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Detalles', url: 'https://images.unsplash.com/photo-1586880244406-556ebe35f282?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Uso en Viaje', url: 'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=900&q=85' }
+        ]
+      },
+      {
+        sku: 'AVY-005',
+        name: 'Adaptador Universal AVYRA',
+        category: 'Electrónica',
+        price: 42.00,
+        stock: 35,
+        shortDesc: 'Compatibilidad internacional de clavijas retráctiles y puertos USB integrados para carga simultánea.',
+        fullDesc: 'Conéctate sin preocupaciones en cualquier destino del mundo. El Adaptador Universal AVYRA integra clavijas retráctiles compatibles con los principales estándares eléctricos internacionales junto con puertos USB integrados, permitiendo alimentar tus dispositivos esenciales desde una sola unidad compacta y segura.',
+        highlights: [
+          'Clavijas retráctiles multi-región con mecanismo de bloqueo',
+          'Puertos USB integrados para carga práctica de dispositivos',
+          'Diseño compacto todo-en-uno sin piezas sueltas',
+          'Carcasa resistente de acabado sobrio y elegante'
+        ],
+        views: [
+          { label: 'Vista Frontal', url: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Vista Lateral', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Detalles', url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Uso en Viaje', url: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=85' }
+        ]
+      },
+      {
+        sku: 'AVY-006',
+        name: 'Báscula Digital Travel',
+        category: 'Accesorios',
+        price: 24.00,
+        stock: 30,
+        shortDesc: 'Pantalla digital de lectura clara, correa resistente de enganche rápido y diseño ultraligero de bolsillo.',
+        fullDesc: 'Evita cargos inesperados por exceso de equipaje en el aeropuerto. La Báscula Digital Travel de AVYRA te permite verificar el peso de tus maletas en segundos antes de salir de casa o del hotel, gracias a su correa reforzada con hebilla segura, mango ergonómico y pantalla digital de fácil lectura.',
+        highlights: [
+          'Pantalla digital nítida de lectura rápida',
+          'Correa de nailon resistente con broche de seguridad',
+          'Diseño ergonómico y ligero que cabe en cualquier bolsillo',
+          'Ideal para equipaje de mano y maletas facturadas'
+        ],
+        views: [
+          { label: 'Vista Frontal', url: 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Vista Lateral', url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Detalles', url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85' },
+          { label: 'Uso en Viaje', url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=900&q=85' }
+        ]
+      }
+    ];
+
+    // 2. ESTADO DE LA APLICACIÓN
+    let products = [];
+    let cart = []; // [{ sku, qty }]
+    let currentCategory = 'Todos';
+    let currentSearch = '';
+    let activeProductModalSku = null;
+    let activeProductViewIdx = 0;
+    let activeProductQty = 1;
+
+    // Claves de almacenamiento local
+    const STORAGE_KEY_PRODUCTS = 'avyra_store_products_v1';
+    const STORAGE_KEY_CART = 'avyra_store_cart_v1';
+
+    // 3. INICIALIZACIÓN
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+      loadState();
+      renderCatalog();
+      renderCart();
+      updateGlobalStockDisplay();
+      lucide.createIcons();
+    });
+
+    function loadState() {
+      try {
+        const savedProducts = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+        if (savedProducts) {
+          products = JSON.parse(savedProducts);
+        } else {
+          products = JSON.parse(JSON.stringify(INITIAL_PRODUCTS));
+          saveProductsState();
+        }
+
+        const savedCart = localStorage.getItem(STORAGE_KEY_CART);
+        if (savedCart) {
+          cart = JSON.parse(savedCart);
+        }
+      } catch (e) {
+        products = JSON.parse(JSON.stringify(INITIAL_PRODUCTS));
+        cart = [];
+      }
+    }
+
+    function saveProductsState() {
+      localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+      updateGlobalStockDisplay();
+    }
+
+    function saveCartState() {
+      localStorage.setItem(STORAGE_KEY_CART, JSON.stringify(cart));
+    }
+
+    function updateGlobalStockDisplay() {
+      const totalStock = products.reduce((sum, p) => sum + Number(p.stock), 0);
+      const indicator = document.getElementById('global-stock-indicator');
+      if (indicator) {
+        indicator.textContent = `Inventario disponible: ${totalStock} unidades`;
+      }
+    }
+
+    // 4. UTILIDADES DE UI (TOASTS Y FORMATO)
+    function formatCurrency(amount) {
+      return '$' + Number(amount).toFixed(2);
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const bgClass = type === 'error' 
+        ? 'bg-avyra-burgundy text-white border-red-900' 
+        : type === 'success' 
+          ? 'bg-avyra-navy text-white border-avyra-gold/40' 
+          : 'bg-white text-avyra-navy border-avyra-beigeDark';
+
+      toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-xs sm:text-sm font-medium transition-all duration-300 transform translate-y-0 ${bgClass}`;
+      toast.innerHTML = `
+        <span class="flex-1">${message}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-8px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    // 5. FILTRADO Y RENDERIZADO DEL CATÁLOGO
+    function setCategory(category) {
+      currentCategory = category;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.dataset.cat === category) {
+          btn.className = 'cat-btn active px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-avyra-navy text-white shadow-sm';
+        } else {
+          btn.className = 'cat-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition bg-white text-avyra-navy border border-avyra-beigeDark hover:border-avyra-navy';
+        }
+      });
+      renderCatalog();
+    }
+
+    function handleSearch(value) {
+      currentSearch = value.trim().toLowerCase();
+      document.getElementById('search-input-desktop').value = value;
+      document.getElementById('search-input-mobile').value = value;
+      renderCatalog();
+    }
+
+    function resetFilters() {
+      currentCategory = 'Todos';
+      currentSearch = '';
+      document.getElementById('search-input-desktop').value = '';
+      document.getElementById('search-input-mobile').value = '';
+      setCategory('Todos');
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('products-grid');
+      const emptyState = document.getElementById('empty-search');
+
+      const filtered = products.filter(p => {
+        const matchesCat = currentCategory === 'Todos' || p.category === currentCategory;
+        const matchesSearch = !currentSearch || 
+          p.name.toLowerCase().includes(currentSearch) ||
+          p.sku.toLowerCase().includes(currentSearch) ||
+          p.shortDesc.toLowerCase().includes(currentSearch) ||
+          p.category.toLowerCase().includes(currentSearch);
+        return matchesCat && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      grid.innerHTML = filtered.map(product => {
+        const inCartItem = cart.find(item => item.sku === product.sku);
+        const qtyInCart = inCartItem ? inCartItem.qty : 0;
+        const availableToAdd = Math.max(0, product.stock - qtyInCart);
+        const isOutOfStock = product.stock <= 0;
+
+        const fallbackImg = `https://placehold.co/800x600/0F223D/F5F1EB?text=${encodeURIComponent(product.sku + ' - ' + product.name)}`;
+
+        return `
+          <article class="group bg-white rounded-2xl border border-avyra-beigeDark overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col">
+            
+            <!-- Imagen Principal con Badges -->
+            <div class="relative aspect-[4/3] bg-avyra-beige overflow-hidden cursor-pointer" onclick="openProductModal('${product.sku}')">
+              <img 
+                src="${product.views[0].url}" 
+                alt="${product.name}" 
+                onerror="this.onerror=null;this.src='${fallbackImg}';"
+                class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+              />
+              <div class="absolute top-3 left-3 flex items-center gap-1.5">
+                <span class="px-2.5 py-1 rounded-md bg-avyra-navy/90 backdrop-blur-xs text-white text-[11px] font-mono font-semibold tracking-wider">
+                  ${product.sku}
+                </span>
+                <span class="px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-xs text-avyra-navy text-[11px] font-semibold">
+                  ${product.category}
+                </span>
+              </div>
+
+              <!-- Indicador de 4 Vistas -->
+              <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-xs text-white text-[11px] flex items-center gap-1">
+                <i data-lucide="images" class="w-3.5 h-3.5"></i>
+                <span>4 vistas</span>
+              </div>
+            </div>
+
+            <!-- Información del Producto -->
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-semibold ${isOutOfStock ? 'text-avyra-burgundy' : 'text-emerald-700'} flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full ${isOutOfStock ? 'bg-avyra-burgundy' : 'bg-emerald-600'}"></span>
+                  ${isOutOfStock ? 'Agotado' : `${product.stock} disponibles`}
+                </span>
+                ${qtyInCart > 0 ? `<span class="text-[11px] bg-avyra-beige text-avyra-navy px-2 py-0.5 rounded font-medium">${qtyInCart} en tu bolsa</span>` : ''}
+              </div>
+
+              <h3 onclick="openProductModal('${product.sku}')" class="font-serif text-2xl font-bold text-avyra-navy hover:text-avyra-burgundy cursor-pointer transition leading-snug mb-2">
+                ${product.name}
+              </h3>
+
+              <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-5 flex-1">
+                ${product.shortDesc}
+              </p>
+
+              <!-- Precio y Acciones -->
+              <div class="pt-4 border-t border-avyra-beigeDark flex items-center justify-between gap-3">
+                <div>
+                  <span class="block text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Precio ref.</span>
+                  <span class="text-xl font-bold text-avyra-navy">${formatCurrency(product.price)}</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button 
+                    onclick="openProductModal('${product.sku}')" 
+                    class="px-3.5 py-2.5 rounded-lg border border-avyra-navy text-avyra-navy hover:bg-avyra-beige text-xs font-semibold transition"
+                  >
+                    Ver detalles
+                  </button>
+                  <button 
+                    onclick="addToCart('${product.sku}', 1)" 
+                    ${isOutOfStock || availableToAdd <= 0 ? 'disabled' : ''}
+                    class="px-4 py-2.5 rounded-lg bg-avyra-burgundy hover:bg-avyra-burgundyHover disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+                  >
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    <span>Añadir</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // 6. PÁGINA / MODAL INDIVIDUAL DE PRODUCTO (CON GALERÍA DE 4 VISTAS)
+    function openProductModal(sku) {
+      const product = products.find(p => p.sku === sku);
+      if (!product) return;
+
+      activeProductModalSku = sku;
+      activeProductViewIdx = 0;
+      activeProductQty = 1;
+
+      renderProductModalContent();
+      document.getElementById('product-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+      activeProductModalSku = null;
+    }
+
+    function selectProductView(idx) {
+      activeProductViewIdx = idx;
+      renderProductModalContent();
+    }
+
+    function changeModalQty(delta) {
+      const product = products.find(p => p.sku === activeProductModalSku);
+      if (!product) return;
+
+      const inCart = cart.find(c => c.sku === product.sku);
+      const maxAvailable = Math.max(1, product.stock - (inCart ? inCart.qty : 0));
+
+      const nextQty = activeProductQty + delta;
+      if (nextQty >= 1 && nextQty <= maxAvailable) {
+        activeProductQty = nextQty;
+        renderProductModalContent();
+      }
+    }
+
+    function renderProductModalContent() {
+      const product = products.find(p => p.sku === activeProductModalSku);
+      if (!product) return;
+
+      const container = document.getElementById('product-modal-content');
+      const currentView = product.views[activeProductViewIdx] || product.views[0];
+      const inCart = cart.find(c => c.sku === product.sku);
+      const qtyInCart = inCart ? inCart.qty : 0;
+      const remainingStock = Math.max(0, product.stock - qtyInCart);
+      const fallbackImg = `https://placehold.co/900x700/0F223D/F5F1EB?text=${encodeURIComponent(product.sku)}`;
+
+      container.innerHTML = `
+        <!-- Galería Izquierda (4 Vistas) -->
+        <div class="lg:col-span-6 bg-avyra-beige/60 p-5 sm:p-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-avyra-beigeDark">
+          <div>
+            <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-white border border-avyra-beigeDark shadow-xs mb-4">
+              <img 
+                src="${currentView.url}" 
+                alt="${product.name} - ${currentView.label}" 
+                onerror="this.onerror=null;this.src='${fallbackImg}';"
+                class="w-full h-full object-cover object-center transition-all duration-300"
+              />
+              <span class="absolute bottom-3 left-3 px-3 py-1 rounded-md bg-avyra-navy/90 text-white text-xs font-medium">
+                ${currentView.label}
+              </span>
+            </div>
+
+            <!-- Selector de 4 Miniaturas -->
+            <div class="grid grid-cols-4 gap-2.5">
+              ${product.views.map((view, idx) => `
+                <button 
+                  type="button"
+                  onclick="selectProductView(${idx})" 
+                  class="group text-left rounded-lg overflow-hidden border-2 transition ${idx === activeProductViewIdx ? 'border-avyra-burgundy ring-2 ring-avyra-burgundy/20' : 'border-transparent opacity-75 hover:opacity-100'}"
+                >
+                  <div class="aspect-[4/3] bg-white">
+                    <img src="${view.url}" alt="${view.label}" onerror="this.onerror=null;this.src='${fallbackImg}';" class="w-full h-full object-cover" />
+                  </div>
+                  <span class="block text-[10px] font-semibold text-center py-1 bg-white text-avyra-navy truncate px-1">
+                    ${view.label}
+                  </span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <p class="text-[11px] text-gray-500 mt-4 flex items-center gap-1.5">
+            <i data-lucide="camera" class="w-3.5 h-3.5 text-avyra-navy"></i>
+            Selecciona cada vista para apreciar diseño, detalles y uso en viaje.
+          </p>
+        </div>
+
+        <!-- Detalles Derecha -->
+        <div class="lg:col-span-6 p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="px-2.5 py-1 rounded bg-avyra-navy text-white font-mono text-xs font-semibold">${product.sku}</span>
+              <span class="px-2.5 py-1 rounded bg-avyra-beige text-avyra-navy text-xs font-semibold">${product.category}</span>
+              <span class="px-2.5 py-1 rounded text-xs font-semibold ${product.stock > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-avyra-burgundy border border-red-200'}">
+                ${product.stock > 0 ? `${product.stock} unidades en inventario` : 'Sin inventario'}
+              </span>
+            </div>
+
+            <h2 class="font-serif text-3xl font-bold text-avyra-navy leading-tight mb-2">${product.name}</h2>
+            <div class="flex items-baseline gap-2 mb-5">
+              <span class="text-2xl sm:text-3xl font-bold text-avyra-burgundy">${formatCurrency(product.price)}</span>
+              <span class="text-xs text-gray-500">USD (Precio referencial)</span>
+            </div>
+
+            <p class="text-sm text-gray-600 leading-relaxed mb-6">
+              ${product.fullDesc}
+            </p>
+
+            <div class="mb-6">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-avyra-navy mb-2.5">Características Destacadas</h4>
+              <ul class="space-y-2">
+                ${product.highlights.map(item => `
+                  <li class="flex items-start gap-2 text-xs sm:text-sm text-gray-700">
+                    <i data-lucide="check" class="w-4 h-4 text-avyra-burgundy shrink-0 mt-0.5"></i>
+                    <span>${item}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Selector de Cantidad y Compra -->
+          <div class="pt-5 border-t border-avyra-beigeDark">
+            ${remainingStock > 0 ? `
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div class="flex items-center justify-between sm:justify-start border border-avyra-beigeDark rounded-lg bg-avyra-beige/40 px-2">
+                  <button type="button" onclick="changeModalQty(-1)" class="p-2.5 text-avyra-navy hover:text-avyra-burgundy transition">
+                    <i data-lucide="minus" class="w-4 h-4"></i>
+                  </button>
+                  <span class="w-10 text-center font-bold text-sm text-avyra-navy">${activeProductQty}</span>
+                  <button type="button" onclick="changeModalQty(1)" class="p-2.5 text-avyra-navy hover:text-avyra-burgundy transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <button 
+                  type="button"
+                  onclick="addToCart('${product.sku}', ${activeProductQty}); closeProductModal(); toggleCartDrawer(true);" 
+                  class="flex-1 py-3.5 px-6 rounded-lg bg-avyra-burgundy hover:bg-avyra-burgundyHover text-white font-semibold text-sm tracking-wide transition shadow-md flex items-center justify-center gap-2"
+                >
+                  <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                  <span>Añadir al Carrito — ${formatCurrency(product.price * activeProductQty)}</span>
+                </button>
+              </div>
+              ${qtyInCart > 0 ? `<p class="text-xs text-gray-500 mt-2">Ya tienes ${qtyInCart} unidad(es) de este artículo en tu bolsa.</p>` : ''}
+            ` : `
+              <div class="p-3.5 rounded-lg bg-avyra-beige text-center text-sm font-medium text-avyra-navy">
+                ${product.stock > 0 ? 'Ya agregaste el máximo disponible en inventario a tu bolsa.' : 'Este producto se encuentra temporalmente agotado.'}
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    // 7. GESTIÓN DEL CARRITO DE COMPRAS
+    function toggleCartDrawer(open) {
+      const overlay = document.getElementById('cart-drawer-overlay');
+      const drawer = document.getElementById('cart-drawer');
+
+      if (open) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+        document.body.style.overflow = 'hidden';
+      } else {
+        drawer.classList.add('translate-x-full');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+        document.body.style.overflow = '';
+      }
+    }
+
+    function addToCart(sku, qty = 1) {
+      const product = products.find(p => p.sku === sku);
+      if (!product || product.stock <= 0) {
+        showToast('Este producto no tiene inventario disponible.', 'error');
+        return;
+      }
+
+      const existing = cart.find(item => item.sku === sku);
+      const currentQty = existing ? existing.qty : 0;
+
+      if (currentQty + qty > product.stock) {
+        showToast(`Solo hay ${product.stock} unidades disponibles de ${product.name}.`, 'error');
+        return;
+      }
+
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({ sku, qty });
+      }
+
+      saveCartState();
+      renderCart();
+      renderCatalog();
+      showToast(`${product.name} añadido a tu bolsa.`, 'success');
+    }
+
+    function updateCartItemQty(sku, delta) {
+      const product = products.find(p => p.sku === sku);
+      const itemIndex = cart.findIndex(item => item.sku === sku);
+      if (itemIndex === -1 || !product) return;
+
+      const newQty = cart[itemIndex].qty + delta;
+
+      if (newQty <= 0) {
+        cart.splice(itemIndex, 1);
+      } else if (newQty > product.stock) {
+        showToast(`Inventario máximo disponible: ${product.stock} unidades.`, 'error');
+        return;
+      } else {
+        cart[itemIndex].qty = newQty;
+      }
+
+      saveCartState();
+      renderCart();
+      renderCatalog();
+    }
+
+    function removeFromCart(sku) {
+      cart = cart.filter(item => item.sku !== sku);
+      saveCartState();
+      renderCart();
+      renderCatalog();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-items-container');
+      const badge = document.getElementById('cart-badge');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const totalEl = document.getElementById('cart-total');
+      const checkoutBtn = document.getElementById('checkout-btn');
+
+      // Sincronizar cantidades por si el inventario cambió desde administración
+      cart = cart.map(item => {
+        const prod = products.find(p => p.sku === item.sku);
+        if (!prod || prod.stock <= 0) return null;
+        return { sku: item.sku, qty: Math.min(item.qty, prod.stock) };
+      }).filter(Boolean);
+      saveCartState();
+
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      badge.textContent = totalCount;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center py-12">
+            <div class="w-16 h-16 rounded-full bg-avyra-beige flex items-center justify-center text-avyra-navy mb-4">
+              <i data-lucide="shopping-bag" class="w-7 h-7"></i>
+            </div>
+            <h4 class="font-serif text-xl font-bold text-avyra-navy">Tu bolsa está vacía</h4>
+            <p class="text-xs text-gray-500 mt-1 max-w-xs">Explora nuestra colección de viaje y selecciona los artículos para tu próximo destino.</p>
+          </div>
+        `;
+        subtotalEl.textContent = '$0.00';
+        totalEl.textContent = '$0.00';
+        checkoutBtn.disabled = true;
+        lucide.createIcons();
+        return;
+      }
+
+      checkoutBtn.disabled = false;
+      let subtotal = 0;
+
+      container.innerHTML = cart.map(item => {
+        const prod = products.find(p => p.sku === item.sku);
+        const lineTotal = prod.price * item.qty;
+        subtotal += lineTotal;
+        const fallbackImg = `https://placehold.co/200x200/0F223D/F5F1EB?text=${encodeURIComponent(prod.sku)}`;
+
+        return `
+          <div class="bg-white p-3.5 rounded-xl border border-avyra-beigeDark flex gap-3.5 shadow-2xs">
+            <img src="${prod.views[0].url}" alt="${prod.name}" onerror="this.onerror=null;this.src='${fallbackImg}';" class="w-20 h-20 rounded-lg object-cover bg-avyra-beige shrink-0" />
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <span class="text-[10px] font-mono font-semibold text-gray-400">${prod.sku}</span>
+                  <h5 class="font-serif text-base font-bold text-avyra-navy truncate">${prod.name}</h5>
+                </div>
+                <button onclick="removeFromCart('${prod.sku}')" title="Eliminar" class="text-gray-400 hover:text-avyra-burgundy transition p-1">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mb-2.5">${formatCurrency(prod.price)} c/u</p>
+              
+              <div class="flex items-center justify-between">
+                <div class="inline-flex items-center border border-avyra-beigeDark rounded-lg bg-avyra-beige/40">
+                  <button onclick="updateCartItemQty('${prod.sku}', -1)" class="px-2 py-1 text-avyra-navy hover:text-avyra-burgundy">
+                    <i data-lucide="minus" class="w-3 h-3"></i>
+                  </button>
+                  <span class="px-2.5 text-xs font-bold text-avyra-navy">${item.qty}</span>
+                  <button onclick="updateCartItemQty('${prod.sku}', 1)" class="px-2 py-1 text-avyra-navy hover:text-avyra-burgundy">
+                    <i data-lucide="plus" class="w-3 h-3"></i>
+                  </button>
+                </div>
+                <span class="text-sm font-bold text-avyra-navy">${formatCurrency(lineTotal)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      subtotalEl.textContent = formatCurrency(subtotal);
+      totalEl.textContent = formatCurrency(subtotal);
+      lucide.createIcons();
+    }
+
+    // 8. PROCESO DE CHECKOUT Y CONFIRMACIÓN DE PEDIDO
+    function openCheckoutModal() {
+      if (cart.length === 0) return;
+
+      toggleCartDrawer(false);
+      document.getElementById('checkout-form-view').classList.remove('hidden');
+      document.getElementById('checkout-confirmation-view').classList.add('hidden');
+      document.getElementById('checkout-modal-title').textContent = 'Finalizar Solicitud de Compra';
+
+      renderCheckoutSummary();
+      toggleAddressFields();
+
+      document.getElementById('checkout-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      lucide.createIcons();
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkout-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function toggleAddressFields() {
+      const selected = document.querySelector('input[name="shipping-method"]:checked')?.value || '';
+      const shippingLabel = document.getElementById('checkout-shipping-label');
+      const provinceSelect = document.getElementById('cust-province');
+      const cityInput = document.getElementById('cust-city');
+
+      if (selected.includes('Tulcán')) {
+        shippingLabel.textContent = 'Sin costo (Retiro en Tulcán)';
+        provinceSelect.value = 'Carchi (Tulcán)';
+        cityInput.value = 'Tulcán';
+      } else {
+        shippingLabel.textContent = 'Por confirmar según destino';
+      }
+    }
+
+    function renderCheckoutSummary() {
+      const container = document.getElementById('checkout-summary-items');
+      let subtotal = 0;
+
+      container.innerHTML = cart.map(item => {
+        const prod = products.find(p => p.sku === item.sku);
+        const totalLine = prod.price * item.qty;
+        subtotal += totalLine;
+
+        return `
+          <div class="flex items-center justify-between gap-3 bg-white p-2.5 rounded-lg border border-avyra-beigeDark">
+            <div class="min-w-0">
+              <p class="font-semibold text-avyra-navy text-xs truncate">${prod.name}</p>
+              <p class="text-[11px] text-gray-500">${prod.sku} &bull; Cant: ${item.qty}</p>
+            </div>
+            <span class="font-bold text-xs text-avyra-navy shrink-0">${formatCurrency(totalLine)}</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('checkout-subtotal').textContent = formatCurrency(subtotal);
+      document.getElementById('checkout-total').textContent = formatCurrency(subtotal);
+    }
+
+    function submitOrder(event) {
+      event.preventDefault();
+      if (cart.length === 0) return;
+
+      const customer = {
+        name: document.getElementById('cust-name').value.trim(),
+        idNumber: document.getElementById('cust-id').value.trim(),
+        phone: document.getElementById('cust-phone').value.trim(),
+        email: document.getElementById('cust-email').value.trim(),
+        province: document.getElementById('cust-province').value,
+        city: document.getElementById('cust-city').value.trim(),
+        address: document.getElementById('cust-address').value.trim(),
+        shipping: document.querySelector('input[name="shipping-method"]:checked').value,
+        payment: document.querySelector('input[name="payment-method"]:checked').value
+      };
+
+      // Generar código de orden único
+      const orderId = 'AVY-' + Date.now().toString().slice(-6);
+      const orderDate = new Date().toLocaleDateString('es-EC', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      let subtotal = 0;
+      const orderItems = cart.map(item => {
+        const prod = products.find(p => p.sku === item.sku);
+        const lineTotal = prod.price * item.qty;
+        subtotal += lineTotal;
+
+        // Descontar del inventario disponible real
+        prod.stock = Math.max(0, prod.stock - item.qty);
+
+        return {
+          sku: prod.sku,
+          name: prod.name,
+          qty: item.qty,
+          unitPrice: prod.price,
+          lineTotal
+        };
+      });
+
+      // Guardar nuevo inventario y limpiar carrito
+      saveProductsState();
+      cart = [];
+      saveCartState();
+      renderCatalog();
+      renderCart();
+
+      // Rellenar recibo
+      document.getElementById('receipt-order-id').textContent = orderId;
+      document.getElementById('receipt-date').textContent = orderDate;
+      document.getElementById('receipt-cust-name').textContent = customer.name;
+      document.getElementById('receipt-cust-id').textContent = `Cédula/RUC: ${customer.idNumber}`;
+      document.getElementById('receipt-cust-phone').textContent = `Tel/WhatsApp: ${customer.phone}`;
+      document.getElementById('receipt-cust-email').textContent = customer.email;
+      document.getElementById('receipt-shipping').textContent = customer.shipping;
+      document.getElementById('receipt-location').textContent = `${customer.city}, ${customer.province}`;
+      document.getElementById('receipt-address').textContent = customer.address;
+      document.getElementById('receipt-payment').textContent = `Pago: ${customer.payment}`;
+      document.getElementById('receipt-total').textContent = formatCurrency(subtotal);
+
+      document.getElementById('receipt-items-list').innerHTML = orderItems.map(item => `
+        <div class="py-2.5 flex items-center justify-between gap-4">
+          <div>
+            <span class="font-semibold text-avyra-navy">${item.name}</span>
+            <span class="block text-xs text-gray-500">${item.sku} &bull; ${item.qty} x ${formatCurrency(item.unitPrice)}</span>
+          </div>
+          <span class="font-bold text-avyra-navy">${formatCurrency(item.lineTotal)}</span>
+        </div>
+      `).join('');
+
+      // Construir enlace directo a WhatsApp oficial de AVYRA (0963774328 -> 593963774328)
+      const itemsText = orderItems.map(i => `- ${i.qty}x ${i.name} (${i.sku}): ${formatCurrency(i.lineTotal)}`).join('\n');
+      const waMessage = `Hola AVYRA, acabo de generar el pedido *${orderId}*:\n\n` +
+        `*Cliente:* ${customer.name}\n` +
+        `*Cédula/RUC:* ${customer.idNumber}\n` +
+        `*Destino:* ${customer.city}, ${customer.province}\n` +
+        `*Dirección:* ${customer.address}\n` +
+        `*Entrega:* ${customer.shipping}\n` +
+        `*Método de pago:* ${customer.payment}\n\n` +
+        `*Detalle:*\n${itemsText}\n\n` +
+        `*Total Referencial:* ${formatCurrency(subtotal)}\n\n` +
+        `Quedo atento/a para coordinar el pago y envío.`;
+
+      document.getElementById('receipt-whatsapp-btn').href = `https://wa.me/593963774328?text=${encodeURIComponent(waMessage)}`;
+
+      // Cambiar a vista de confirmación
+      document.getElementById('checkout-form-view').classList.add('hidden');
+      document.getElementById('checkout-confirmation-view').classList.remove('hidden');
+      document.getElementById('checkout-modal-title').textContent = 'Comprobante de Pedido Confirmado';
+      
+      showToast(`¡Pedido ${orderId} registrado con éxito!`, 'success');
+      lucide.createIcons();
+    }
+
+    // 9. PANEL DE ADMINISTRACIÓN RÁPIDA (EDICIÓN DE PRECIOS E INVENTARIO)
+    function openAdminModal() {
+      const tbody = document.getElementById('admin-table-body');
+      tbody.innerHTML = products.map((prod, idx) => `
+        <tr>
+          <td class="py-3 px-2 font-mono text-xs font-bold text-avyra-navy">${prod.sku}</td>
+          <td class="py-3 px-2 font-medium text-avyra-navy">${prod.name}</td>
+          <td class="py-3 px-2 text-xs text-gray-500">${prod.category}</td>
+          <td class="py-3 px-2">
+            <input 
+              type="number" 
+              step="0.01" 
+              min="0" 
+              id="admin-price-${idx}" 
+              value="${prod.price.toFixed(2)}" 
+              class="w-full px-2.5 py-1.5 rounded border border-avyra-beigeDark text-sm font-semibold text-avyra-navy focus:border-avyra-navy focus:outline-none"
+            />
+          </td>
+          <td class="py-3 px-2">
+            <input 
+              type="number" 
+              step="1" 
+              min="0" 
+              id="admin-stock-${idx}" 
+              value="${prod.stock}" 
+              oninput="updateAdminStockCounter()"
+              class="w-full px-2.5 py-1.5 rounded border border-avyra-beigeDark text-sm font-semibold text-avyra-navy focus:border-avyra-navy focus:outline-none"
+            />
+          </td>
+        </tr>
+      `).join('');
+
+      updateAdminStockCounter();
+      document.getElementById('admin-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function updateAdminStockCounter() {
+      let sum = 0;
+      products.forEach((_, idx) => {
+        const val = parseInt(document.getElementById(`admin-stock-${idx}`)?.value || '0', 10);
+        if (!isNaN(val) && val >= 0) sum += val;
+      });
+      document.getElementById('admin-total-stock').textContent = `Total: ${sum} uds.`;
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function saveAdminChanges() {
+      products.forEach((prod, idx) => {
+        const newPrice = parseFloat(document.getElementById(`admin-price-${idx}`).value);
+        const newStock = parseInt(document.getElementById(`admin-stock-${idx}`).value, 10);
+
+        if (!isNaN(newPrice) && newPrice >= 0) prod.price = newPrice;
+        if (!isNaN(newStock) && newStock >= 0) prod.stock = newStock;
+      });
+
+      saveProductsState();
+      renderCatalog();
+      renderCart();
+      closeAdminModal();
+      showToast('Precios e inventario actualizados correctamente.', 'success');
+    }
+
+    function resetDefaultCatalog() {
+      products = JSON.parse(JSON.stringify(INITIAL_PRODUCTS));
+      saveProductsState();
+      renderCatalog();
+      renderCart();
+      openAdminModal();
+      showToast('Inventario inicial de 210 unidades y precios restablecidos.', 'info');
+    }
+  </script>
+</body>
+</html>
